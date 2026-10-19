@@ -3,6 +3,54 @@
 Predicting whether an e-commerce order will reach the customer on time, using order, product, and delivery-related features. Three supervised classifiers (Decision Tree, Logistic Regression, Neural Network) are compared, and K-Means clustering is used to explore the structure of the data.
 ---
 
+## 🚩 The Problem
+
+E-commerce depends on delivering orders when customers expect them. When shipments arrive late:
+
+- **Customer trust drops**, which hurts ratings and repeat purchases.
+- **Operational costs rise** through extra support calls, complaints, and refunds.
+- **Logistics teams react too late**, because delays are usually discovered after the promised date has already passed.
+
+Platforms ship thousands of orders with different weights, discounts, warehouses, and shipping modes. It is hard to tell, by inspection, which orders are at risk and which factors drive the delays.
+
+**Core question:** *Given the details of an order, can we predict whether it will reach the customer on time?*
+
+---
+
+## 💡 My Solution
+
+I framed the problem as a **binary classification task** on an e-commerce shipping dataset (10,999 orders, 11 input features) and built an end-to-end machine learning pipeline:
+
+1. **Explore** the data: distributions, correlations, and class balance.
+2. **Clean and prepare** it: drop the non-informative `ID`, encode categorical features (ordinal, label, and one-hot), and standardize numeric features.
+3. **Split** it with a stratified 80/20 train/test split to keep the class ratio equal in both sets.
+4. **Train and compare three models:**
+   - Decision Tree (non-linear baseline)
+   - Logistic Regression (linear baseline)
+   - Neural Network, an MLP with layers (100, 50)
+5. **Evaluate** each with accuracy, precision, recall, F1, AUC, confusion matrices, and ROC curves.
+6. **Explore structure** with K-Means clustering (k = 2) to see what naturally separates the orders.
+
+---
+
+## 🎯 Impact
+
+**What the results show**
+
+- The models predict delays **better than chance** (AUC up to **0.73**, accuracy about **64%**), and the best choice depends on the business goal:
+  - **Neural Network:** recall of **0.77** and the highest F1 and AUC, so it catches the most delayed shipments (it also raises more false alarms).
+  - **Logistic Regression:** highest accuracy (**0.64**) and precision (**0.71**), so it is the most reliable when a flag is raised.
+- **`Discount_offered`** and **`Weight_in_gms`** are the strongest signals of delay, so these are the first places a logistics team should look.
+- `Gender`, `Customer_care_calls`, and `Mode_of_Shipment` add almost no predictive value, so they can be deprioritized in future data collection.
+
+**How this could be used**
+
+- Flag high-risk orders **before** dispatch so they can be prioritized, rerouted, or given realistic delivery estimates.
+- Guide data collection: the ~64% ceiling shows that key factors are missing, such as **distance to destination**, carrier performance, and warehouse load.
+
+**Honest scope:** this is an academic proof of concept on a single dataset. It is not production-ready, and about 64% accuracy means it should support human decisions, not replace them. See the Limitations section below.
+
+
 ## 📌 Overview
 
 Late deliveries reduce customer trust and raise operational costs. This project treats shipment delay as a **binary classification** problem and asks:
